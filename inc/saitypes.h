@@ -1951,6 +1951,25 @@ typedef struct _sai_switch_health_data_t
 } sai_switch_health_data_t;
 
 /**
+ * @brief Static member selection mode
+ *
+ * Used to select how the Next hop group and LAG members are resolved.
+ * Member can be selected based on the hash, random or in round robin manner.
+ */
+typedef enum _sai_static_member_selection_mode_t
+{
+    /** Static member selection mode is hash, hash algorithm set at switch level */
+    SAI_STATIC_MEMBER_SELECTION_MODE_HASH,
+
+    /** Static member selection mode is random */
+    SAI_STATIC_MEMBER_SELECTION_MODE_RANDOM,
+
+    /** Static member selection mode is round robin */
+    SAI_STATIC_MEMBER_SELECTION_MODE_ROUND_ROBIN,
+
+} sai_static_member_selection_mode_t;
+
+/**
  * @}
  */
 #endif /** __SAITYPES_H_ */
