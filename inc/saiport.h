@@ -2529,6 +2529,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
 
     /**
+     * @brief Cut Through Enable. The packet is cut through enabled if, SAI_SWITCH_ATTR_SWITCHING_MODE == SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH and both the ingress and egress port have SAI_PORT_ATTR_CUT_THROUGH == true
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     */
+    SAI_PORT_ATTR_CUT_THROUGH,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
