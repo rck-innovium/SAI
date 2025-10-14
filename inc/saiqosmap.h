@@ -83,6 +83,15 @@ typedef enum _sai_qos_map_type_t
     /** QOS Map to set EXP to Forwarding class */
     SAI_QOS_MAP_TYPE_MPLS_EXP_TO_FORWARDING_CLASS = 0x0000000e,
 
+    /** QOS Map to map packet {dot1p+DEI} to TC */
+    SAI_QOS_MAP_TYPE_DOT1P_DEI_TO_TC = 0x0000000f,
+
+    /** QOS Map to map Traffic class to VC */
+    SAI_QOS_MAP_TYPE_TC_TO_VC = 0x00000010,
+
+    /** QOS Map to set queue to VC */
+    SAI_QOS_MAP_TYPE_QUEUE_TO_VC = 0x00000011,
+
     /** Custom range base value */
     SAI_QOS_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
