@@ -1990,6 +1990,136 @@ typedef struct _sai_stat_capability_list_t
 } sai_stat_capability_list_t;
 
 /**
+ * @brief Kind of value constraint an implementation enforces on a
+ *        numerical or scalar enum attribute.
+ *
+ * Carried in sai_attribute_constraint_t::type and returned by
+ * sai_query_attribute_value_constraints(). The accompanying
+ * sai_attribute_constraint_t::value MUST be interpreted using the
+ * QUERIED attribute's attrvaluetype (obtained via
+ * sai_metadata_get_attr_metadata() against the original object_type +
+ * attr_id) - this constraint-type enum is generic across all
+ * numerical (and scalar enum) attribute value types.
+ *
+ * MIN / MAX / STEP only apply to a numerical attr_id - a scalar enum
+ * has no natural minimum, maximum or step. For an enum attr_id
+ * (isenum == true, attrvaluetype == SAI_ATTR_VALUE_TYPE_INT32), an
+ * implementation MUST only return DEFAULT and/or ALLOWED_VALUES
+ * entries.
+ */
+typedef enum _sai_attribute_constraint_type_t
+{
+    /**
+     * @brief No constraint. Also the value of any pre-allocated
+     * entry the callee did not populate, when the caller
+     * zero-initializes its buffer up front (see
+     * sai_attribute_constraint_list_t).
+     */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_NONE,
+
+    /**
+     * @brief Minimum supported value (inclusive). Numerical attr_id only.
+     */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_MIN,
+
+    /**
+     * @brief Maximum supported value (inclusive). Numerical attr_id only.
+     */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_MAX,
+
+    /**
+     * @brief Granularity (step). Legal values form the arithmetic
+     * progression { min + k * step } intersected with [min, max].
+     * Numerical attr_id only.
+     */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_STEP,
+
+    /**
+     * @brief Implementation-specific default value when it differs
+     * from the default declared in the attribute metadata. Numerical
+     * or scalar enum attr_id.
+     */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_DEFAULT,
+
+    /**
+     * @brief Discrete set of allowed values. Numerical or scalar enum
+     * attr_id. The value carrier is a list (u8list / s8list /
+     * u16list / s16list / u32list / s32list) selected by the queried
+     * attribute's attrvaluetype; standard two-pass sizing applies to
+     * the embedded list buffer.
+     */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_ALLOWED_VALUES,
+
+    /** End of sai_attribute_constraint_type_t */
+    SAI_ATTRIBUTE_CONSTRAINT_TYPE_END
+
+} sai_attribute_constraint_type_t;
+
+/**
+ * @brief One value-constraint entry.
+ *
+ * The (type, value) tuple advertises one constraint the implementation
+ * enforces on the queried numerical or scalar enum attribute. The
+ * value field is interpreted using the QUERIED attribute's
+ * attrvaluetype, not the constraint-type enum.
+ *
+ * For scalar constraints (MIN, MAX, STEP, DEFAULT) read the scalar
+ * union member of sai_attribute_value_t that matches the queried
+ * attrvaluetype (u8, s8, u16, s16, u32, s32, u64 or s64). A scalar
+ * enum attr_id uses s32, since SAI stores an enum's underlying value
+ * as sai_int32_t (see sai_attribute_value_t::s32).
+ *
+ * For the ALLOWED_VALUES constraint, read the matching list union
+ * member (u8list, s8list, u16list, s16list, u32list or s32list) - a
+ * scalar enum attr_id uses s32list. The caller pre-allocates the
+ * embedded list buffer using the standard SAI two-pass sizing
+ * protocol.
+ *
+ * @extraparam const sai_attr_metadata_t *meta
+ */
+typedef struct _sai_attribute_constraint_t
+{
+    /**
+     * @brief Kind of constraint.
+     */
+    sai_attribute_constraint_type_t type;
+
+    /**
+     * @brief Constraint value, interpreted using the QUERIED
+     *        attribute's attrvaluetype.
+     *
+     * @passparam meta
+     */
+    sai_attribute_value_t value;
+
+} sai_attribute_constraint_t;
+
+/**
+ * @brief List of value-constraint entries returned by
+ *    sai_query_attribute_value_constraints().
+ *
+ * @extraparam const sai_attr_metadata_t *meta
+ */
+typedef struct _sai_attribute_constraint_list_t
+{
+    /**
+     * @brief In: caller's buffer capacity in entries (normally
+     *    SAI_ATTRIBUTE_CONSTRAINT_TYPE_END - 1).
+     *    Out: actual (or required, on SAI_STATUS_BUFFER_OVERFLOW)
+     *    number of constraint entries.
+     */
+    uint32_t count;
+
+    /**
+     * @brief Caller-allocated array of length count.
+     *
+     * @passparam meta
+     */
+    sai_attribute_constraint_t *list;
+
+} sai_attribute_constraint_list_t;
+
+/**
  * @brief Stat capability under the stream telemetry mode
  */
 typedef struct _sai_stat_st_capability_t
